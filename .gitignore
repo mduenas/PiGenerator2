@@ -1,0 +1,38 @@
+*.iml
+.kotlin
+.gradle
+**/build/
+xcuserdata
+!src/**/build/
+local.properties
+.idea
+.DS_Store
+captures
+.externalNativeBuild
+.cxx
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+!*.xcodeproj/xcshareddata/
+!*.xcodeproj/project.xcworkspace/
+!*.xcworkspace/contents.xcworkspacedata
+**/xcshareddata/WorkspaceSettings.xcsettings
+
+# Sensitive files
+keystore
+*.jks
+*.p12
+*.key
+pigen_key
+pigen_private_key
+encryption_public_key.pem
+pepk.jar
+
+# Large data files
+*.bin
+pi_dataset.txt
+pi_million.txt
+one_million.txt
+value_tracker.txt
+
+# Nested repositories
+PiGenerator2/
