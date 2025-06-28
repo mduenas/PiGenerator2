@@ -44,6 +44,8 @@ class PiCalculator {
         // Use windowed cache for digits
         val maxAvailableDigits = PiDigitManager.getAvailableDigitCount()
         val targetDigits = minOf(digits, maxAvailableDigits)
+        
+        // Start with "3." and add digits after decimal point
         val piBuilder = StringBuilder("3.")
         
         for (i in 1..targetDigits) {
@@ -54,8 +56,8 @@ class PiCalculator {
             
             delay(50) // Simulate calculation time
             
-            // Get digit from windowed cache
-            val digit = PiDigitManager.getDigits(i, 1)
+            // Get digit from windowed cache (skip "3." from file)
+            val digit = PiDigitManager.getDigits(i + 1, 1) // Skip "3."
             if (digit.isNotEmpty()) {
                 piBuilder.append(digit)
             }
@@ -94,8 +96,8 @@ class PiCalculator {
             val startIdx = chunk * chunkSize + 1
             val endIdx = minOf(startIdx + chunkSize, targetDigits + 1)
             
-            // Add digits from windowed cache
-            val chunkDigits = PiDigitManager.getDigits(startIdx, endIdx - startIdx)
+            // Add digits from windowed cache (skip "3." from file)
+            val chunkDigits = PiDigitManager.getDigits(startIdx + 1, endIdx - startIdx) // Skip "3."
             piBuilder.append(chunkDigits)
             
             delay(100) // Simulate calculation time
@@ -130,8 +132,8 @@ class PiCalculator {
             
             delay(25) // Simulate calculation time
             
-            // Get digit from windowed cache
-            val digit = PiDigitManager.getDigits(i, 1)
+            // Get digit from windowed cache (skip "3." from file)
+            val digit = PiDigitManager.getDigits(i + 1, 1) // Skip "3."
             if (digit.isNotEmpty()) {
                 piBuilder.append(digit)
             }
