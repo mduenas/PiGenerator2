@@ -36,3 +36,5 @@ value_tracker.txt
 
 # Nested repositories
 PiGenerator2/
+
+composeApp/release/
