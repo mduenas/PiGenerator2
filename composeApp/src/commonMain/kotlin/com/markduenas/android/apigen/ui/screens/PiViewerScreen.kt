@@ -13,8 +13,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.markduenas.android.apigen.calculation.PiDigitManager
-import com.markduenas.android.apigen.ui.components.AdMobBanner
-import com.markduenas.android.apigen.data.admob.AdMobConstants
+import com.markduenas.android.apigen.presentation.components.AdMobBanner
+import com.markduenas.android.apigen.config.AdMobConstants
 import kotlinx.coroutines.launch
 import kotlin.math.max
 

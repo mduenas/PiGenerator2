@@ -14,8 +14,8 @@ import com.markduenas.android.apigen.calculation.PiCalculator
 import com.markduenas.android.apigen.data.PiAlgorithm
 import com.markduenas.android.apigen.data.PiCalculationProgress
 import com.markduenas.android.apigen.data.PiCalculationResult
-import com.markduenas.android.apigen.ui.components.AdMobBanner
-import com.markduenas.android.apigen.data.admob.AdMobConstants
+import com.markduenas.android.apigen.presentation.components.AdMobBanner
+import com.markduenas.android.apigen.config.AdMobConstants
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.Job
 

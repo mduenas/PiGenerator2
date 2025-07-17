@@ -1,27 +1,35 @@
 package com.markduenas.android.apigen.config
 
+import android.content.Context
 import android.content.pm.ApplicationInfo
-import com.markduenas.android.apigen.io.getAndroidContext
 
 /**
- * Android implementation of BuildConfig using ApplicationInfo to detect debug builds
- */
+* Android implementation of BuildConfig using ApplicationInfo to detect debug builds
+*/
 actual object BuildConfig {
     actual val isDebug: Boolean
         get() {
             return try {
                 val context = getAndroidContext()
                 val appInfo = context.applicationInfo
-                val debugFlag = (appInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
-                println("AdMob: Android debug mode detected: $debugFlag")
-                debugFlag
+                (appInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
             } catch (e: Exception) {
                 // Fallback: assume debug if we can't determine
-                println("AdMob: Failed to detect debug mode, assuming debug: ${e.message}")
                 true
             }
         }
-    
+
     actual val buildType: String
         get() = if (isDebug) "debug" else "release"
+}
+
+// We'll need to set this from MainActivity or App initialization
+private var androidContext: Context? = null
+
+fun setAndroidContext(context: Context) {
+    androidContext = context
+}
+
+fun getAndroidContext(): Context {
+    return androidContext ?: throw IllegalStateException("Android context not set. Call setAndroidContext() from MainActivity.")
 }

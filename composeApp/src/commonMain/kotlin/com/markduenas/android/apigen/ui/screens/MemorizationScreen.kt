@@ -21,8 +21,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.markduenas.android.apigen.data.MemorizationMode
 import com.markduenas.android.apigen.memorization.MemorizationGame
-import com.markduenas.android.apigen.ui.components.AdMobBanner
-import com.markduenas.android.apigen.data.admob.AdMobConstants
+import com.markduenas.android.apigen.presentation.components.AdMobBanner
+import com.markduenas.android.apigen.config.AdMobConstants
 
 @Composable
 fun MemorizationScreen(modifier: Modifier = Modifier) {

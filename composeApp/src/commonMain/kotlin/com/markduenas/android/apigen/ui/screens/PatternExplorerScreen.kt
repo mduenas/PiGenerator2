@@ -20,8 +20,8 @@ import com.markduenas.android.apigen.data.PatternType
 import com.markduenas.android.apigen.patterns.PatternSearcher
 import com.markduenas.android.apigen.utils.formatString
 import com.markduenas.android.apigen.patterns.PatternStatistics
-import com.markduenas.android.apigen.ui.components.AdMobBanner
-import com.markduenas.android.apigen.data.admob.AdMobConstants
+import com.markduenas.android.apigen.presentation.components.AdMobBanner
+import com.markduenas.android.apigen.config.AdMobConstants
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

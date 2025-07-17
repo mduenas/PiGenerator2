@@ -7,7 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.markduenas.android.apigen.io.setAndroidContext
-import com.markduenas.android.apigen.ads.AndroidAdManager
+import com.markduenas.android.apigen.config.setAndroidContext as setAdMobContext
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -17,9 +17,8 @@ class MainActivity : ComponentActivity() {
         // Set Android context for file reader
         setAndroidContext(this)
         
-        // Initialize AdMob
-        val adManager = AndroidAdManager(this)
-        adManager.initializeAds()
+        // Set Android context for AdMob
+        setAdMobContext(this)
 
         setContent {
             App()
