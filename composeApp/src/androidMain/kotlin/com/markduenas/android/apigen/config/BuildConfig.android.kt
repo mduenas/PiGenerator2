@@ -12,9 +12,12 @@ actual object BuildConfig {
             return try {
                 val context = getAndroidContext()
                 val appInfo = context.applicationInfo
-                (appInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
+                val debugFlag = (appInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
+                println("AdMob: Android debug mode detected: $debugFlag")
+                debugFlag
             } catch (e: Exception) {
                 // Fallback: assume debug if we can't determine
+                println("AdMob: Failed to detect debug mode, assuming debug: ${e.message}")
                 true
             }
         }

@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    kotlin("native.cocoapods")
 }
 
 kotlin {
@@ -26,6 +27,21 @@ kotlin {
             baseName = "ComposeApp"
             isStatic = true
         }
+    }
+    
+    cocoapods {
+        summary = "Compose application framework"
+        homepage = "Link to the Shared Module homepage"
+        version = "1.0"
+        ios.deploymentTarget = "12.0"
+        podfile = project.file("../iosApp/Podfile")
+        
+        framework {
+            baseName = "ComposeApp"
+            isStatic = true
+        }
+        
+        pod("Google-Mobile-Ads-SDK")
     }
     
     sourceSets {
@@ -60,8 +76,8 @@ android {
         applicationId = "com.markduenas.android.apigen"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 18
-        versionName = "2.1"
+        versionCode = 23
+        versionName = "2.2"
     }
     packaging {
         resources {
