@@ -11,8 +11,9 @@ object AdMobConstants {
      * Android AdMob Banner Ad Unit ID
      * For testing, use: "ca-app-pub-3940256099942544/6300978111"
      * Replace with your actual ad unit ID for production
+     * ca-app-pub-7540731406850248/9946550555
      */
-    const val ANDROID_BANNER_AD_UNIT_ID = "ca-app-pub-7540731406850248/6300978111"
+    const val ANDROID_BANNER_AD_UNIT_ID = "ca-app-pub-7540731406850248/9946550555"
     
     /**
      * iOS AdMob Banner Ad Unit ID  

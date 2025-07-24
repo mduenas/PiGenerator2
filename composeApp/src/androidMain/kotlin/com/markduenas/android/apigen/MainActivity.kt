@@ -18,7 +18,7 @@ class MainActivity : ComponentActivity() {
         setAndroidContext(this)
         
         // Set Android context for AdMob
-        setAdMobContext(this)
+        com.markduenas.android.apigen.config.setAndroidContext(this)
 
         setContent {
             App()

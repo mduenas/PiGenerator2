@@ -49,6 +49,8 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
+            
+            // AdMob Android (standalone without Firebase)
             implementation("com.google.android.gms:play-services-ads:23.6.0")
         }
         commonMain.dependencies {
@@ -76,8 +78,8 @@ android {
         applicationId = "com.markduenas.android.apigen"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 23
-        versionName = "2.2"
+        versionCode = 25
+        versionName = "2.3"
     }
     packaging {
         resources {

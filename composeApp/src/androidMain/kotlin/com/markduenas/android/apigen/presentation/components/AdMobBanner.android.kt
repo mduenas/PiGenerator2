@@ -10,7 +10,11 @@ import androidx.compose.ui.viewinterop.AndroidView
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
+import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.ads.RequestConfiguration
 import com.markduenas.android.apigen.config.AdMobConstants
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 
 
 /**
@@ -21,7 +25,23 @@ actual fun AdMobBanner(
     adUnitId: String,
     modifier: Modifier
 ) {
+    println("AdMob: Android AdMobBanner called with adUnitId: $adUnitId")
     val context = LocalContext.current
+    
+    // Initialize MobileAds once with test device configuration
+    LaunchedEffect(Unit) {
+        MobileAds.initialize(context) {
+            println("AdMob: MobileAds initialized")
+        }
+        
+        // Configure test devices for debug builds
+        val testDeviceIds = listOf(AdRequest.DEVICE_ID_EMULATOR)
+        val configuration = RequestConfiguration.Builder()
+            .setTestDeviceIds(testDeviceIds)
+            .build()
+        MobileAds.setRequestConfiguration(configuration)
+        println("AdMob: Test device configuration set")
+    }
     
     AndroidView(
         modifier = modifier
