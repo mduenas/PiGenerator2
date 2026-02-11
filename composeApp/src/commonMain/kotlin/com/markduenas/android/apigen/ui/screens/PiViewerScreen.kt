@@ -13,8 +13,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.markduenas.android.apigen.calculation.PiDigitManager
-import com.markduenas.android.apigen.presentation.components.AdMobBanner
-import com.markduenas.android.apigen.config.AdMobConstants
+import com.markduenas.android.apigen.presentation.components.ConditionalAdBanner
 import kotlinx.coroutines.launch
 import kotlin.math.max
 
@@ -97,8 +96,8 @@ fun PiViewerScreen(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier.fillMaxSize()
     ) {
-        // Banner Ad at the top
-        AdMobBanner(AdMobConstants.getBannerAdUnitId())
+        // Banner Ad at the top (hidden if user purchased ad removal)
+        ConditionalAdBanner()
         
         Column(
             modifier = Modifier

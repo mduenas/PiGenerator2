@@ -21,8 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.markduenas.android.apigen.data.MemorizationMode
 import com.markduenas.android.apigen.memorization.MemorizationGame
-import com.markduenas.android.apigen.presentation.components.AdMobBanner
-import com.markduenas.android.apigen.config.AdMobConstants
+import com.markduenas.android.apigen.presentation.components.ConditionalAdBanner
 
 @Composable
 fun MemorizationScreen(modifier: Modifier = Modifier) {
@@ -35,8 +34,8 @@ fun MemorizationScreen(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier.fillMaxSize()
     ) {
-        // Banner Ad at the top
-        AdMobBanner(AdMobConstants.getBannerAdUnitId())
+        // Banner Ad at the top (hidden if user purchased ad removal)
+        ConditionalAdBanner()
         
         LazyColumn(
             modifier = Modifier

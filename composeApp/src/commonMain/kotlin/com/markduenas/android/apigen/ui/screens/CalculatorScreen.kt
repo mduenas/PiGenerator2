@@ -14,8 +14,7 @@ import com.markduenas.android.apigen.calculation.PiCalculator
 import com.markduenas.android.apigen.data.PiAlgorithm
 import com.markduenas.android.apigen.data.PiCalculationProgress
 import com.markduenas.android.apigen.data.PiCalculationResult
-import com.markduenas.android.apigen.presentation.components.AdMobBanner
-import com.markduenas.android.apigen.config.AdMobConstants
+import com.markduenas.android.apigen.presentation.components.ConditionalAdBanner
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.Job
 
@@ -50,8 +49,8 @@ fun CalculatorScreen(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier.fillMaxSize()
     ) {
-        // Banner Ad at the top
-        AdMobBanner(AdMobConstants.getBannerAdUnitId())
+        // Banner Ad at the top (hidden if user purchased ad removal)
+        ConditionalAdBanner()
         
         LazyColumn(
             modifier = Modifier

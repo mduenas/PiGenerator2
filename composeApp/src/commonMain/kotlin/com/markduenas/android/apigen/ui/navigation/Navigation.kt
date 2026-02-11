@@ -11,6 +11,7 @@ import com.markduenas.android.apigen.ui.screens.CalculatorScreen
 import com.markduenas.android.apigen.ui.screens.MemorizationScreen
 import com.markduenas.android.apigen.ui.screens.PatternExplorerScreen
 import com.markduenas.android.apigen.ui.screens.PiViewerScreen
+import com.markduenas.android.apigen.ui.screens.SettingsScreen
 import com.markduenas.android.apigen.ui.theme.PiGeneratorTheme
 
 sealed class Screen(val route: String, val title: String, val icon: ImageVector) {
@@ -18,13 +19,14 @@ sealed class Screen(val route: String, val title: String, val icon: ImageVector)
     object Memorization : Screen("memorization", "Training", Icons.Default.Psychology)
     object PatternExplorer : Screen("patterns", "Explorer", Icons.Default.Search)
     object PiViewer : Screen("viewer", "Viewer", Icons.Default.Visibility)
+    object Settings : Screen("settings", "Settings", Icons.Default.Settings)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PiGeneratorNavHost() {
     var selectedScreen by remember { mutableStateOf<Screen>(Screen.Calculator) }
-    
+
     PiGeneratorTheme {
         Scaffold(
         topBar = {
@@ -33,7 +35,18 @@ fun PiGeneratorNavHost() {
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                )
+                ),
+                actions = {
+                    IconButton(
+                        onClick = { selectedScreen = Screen.Settings }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Settings,
+                            contentDescription = "Settings",
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                    }
+                }
             )
         },
         bottomBar = {
@@ -60,6 +73,7 @@ fun PiGeneratorNavHost() {
                 Screen.Memorization -> MemorizationScreen()
                 Screen.PatternExplorer -> PatternExplorerScreen()
                 Screen.PiViewer -> PiViewerScreen()
+                Screen.Settings -> SettingsScreen()
             }
         }
     }

@@ -1,7 +1,7 @@
 PODS:
   - composeApp (1.0):
     - Google-Mobile-Ads-SDK
-  - Google-Mobile-Ads-SDK (11.13.0):
+  - Google-Mobile-Ads-SDK (12.9.0):
     - GoogleUserMessagingPlatform (>= 1.1)
   - GoogleUserMessagingPlatform (3.0.0)
 
@@ -20,7 +20,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   composeApp: cb86d5ec77a13c42fff6d0913e0a69fa335ac42a
-  Google-Mobile-Ads-SDK: 14f57f2dc33532a24db288897e26494640810407
+  Google-Mobile-Ads-SDK: 36cce7d8dc1b615145d02491c8bf5640ef854e7c
   GoogleUserMessagingPlatform: f8d0cdad3ca835406755d0a69aa634f00e76d576
 
 PODFILE CHECKSUM: ac4e43dbd04e73dfba13f91475a1e136f96f0f7e

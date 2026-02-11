@@ -35,13 +35,15 @@ kotlin {
         version = "1.0"
         ios.deploymentTarget = "12.0"
         podfile = project.file("../iosApp/Podfile")
-        
+
         framework {
             baseName = "ComposeApp"
             isStatic = true
         }
-        
-        pod("Google-Mobile-Ads-SDK")
+
+        // Note: Google-Mobile-Ads-SDK is included directly in iosApp/Podfile
+        // Removed from here to avoid cinterop issues with Xcode 26
+        // The Swift bridge (AdMobViewController.swift) handles AdMob integration
     }
     
     sourceSets {
@@ -49,9 +51,12 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
-            
+
             // AdMob Android (standalone without Firebase)
             implementation("com.google.android.gms:play-services-ads:23.6.0")
+
+            // Google Play Billing for in-app purchases
+            implementation("com.android.billingclient:billing-ktx:7.0.0")
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -78,8 +83,8 @@ android {
         applicationId = "com.markduenas.android.apigen"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 25
-        versionName = "2.3"
+        versionCode = 26
+        versionName = "2.4"
     }
     packaging {
         resources {

@@ -20,8 +20,7 @@ import com.markduenas.android.apigen.data.PatternType
 import com.markduenas.android.apigen.patterns.PatternSearcher
 import com.markduenas.android.apigen.utils.formatString
 import com.markduenas.android.apigen.patterns.PatternStatistics
-import com.markduenas.android.apigen.presentation.components.AdMobBanner
-import com.markduenas.android.apigen.config.AdMobConstants
+import com.markduenas.android.apigen.presentation.components.ConditionalAdBanner
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -47,8 +46,8 @@ fun PatternExplorerScreen(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier.fillMaxSize()
     ) {
-        // Banner Ad at the top
-        AdMobBanner(AdMobConstants.getBannerAdUnitId())
+        // Banner Ad at the top (hidden if user purchased ad removal)
+        ConditionalAdBanner()
         
         LazyColumn(
             modifier = Modifier
