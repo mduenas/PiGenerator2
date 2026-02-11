@@ -83,7 +83,7 @@ android {
         applicationId = "com.markduenas.android.apigen"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 26
+        versionCode = 28
         versionName = "2.4"
     }
     packaging {

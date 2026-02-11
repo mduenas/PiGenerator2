@@ -1,6 +1,7 @@
 package com.markduenas.android.apigen.billing
 
 import android.app.Activity
+import android.util.Log
 import com.android.billingclient.api.*
 import com.markduenas.android.apigen.config.getAndroidContext
 import com.markduenas.android.apigen.settings.getSettingsRepository
@@ -73,6 +74,22 @@ actual class BillingManager : PurchasesUpdatedListener {
     actual suspend fun loadProductDetails() {
         _purchaseState.value = PurchaseState.Loading
 
+        // Check if billing client is ready
+        val client = billingClient
+        if (client == null) {
+            Log.e("BillingManager", "Billing client is null!")
+            _purchaseState.value = PurchaseState.Error("Billing client not initialized")
+            return
+        }
+
+        if (!client.isReady) {
+            Log.e("BillingManager", "Billing client is not ready! Reconnecting...")
+            startConnection()
+        }
+
+        Log.d("BillingManager", "Billing client ready: ${client.isReady}")
+        Log.d("BillingManager", "Querying for product: ${BillingConstants.PRODUCT_ID_REMOVE_ADS_ANDROID}")
+
         val productList = listOf(
             QueryProductDetailsParams.Product.newBuilder()
                 .setProductId(BillingConstants.PRODUCT_ID_REMOVE_ADS_ANDROID)
@@ -84,13 +101,17 @@ actual class BillingManager : PurchasesUpdatedListener {
             .setProductList(productList)
             .build()
 
-        billingClient?.queryProductDetailsAsync(params) { billingResult, productDetailsList ->
+        client.queryProductDetailsAsync(params) { billingResult, productDetailsList ->
+            Log.d("BillingManager", "Product query response: ${billingResult.responseCode}, products: ${productDetailsList.size}")
+            Log.d("BillingManager", "Looking for product ID: ${BillingConstants.PRODUCT_ID_REMOVE_ADS_ANDROID}")
+
             if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && productDetailsList.isNotEmpty()) {
                 productDetails = productDetailsList.first()
                 val details = productDetails!!
                 val price = details.oneTimePurchaseOfferDetails?.formattedPrice
                     ?: BillingConstants.REMOVE_ADS_PRICE_DISPLAY
 
+                Log.d("BillingManager", "Product loaded: ${details.productId}, price: $price")
                 _purchaseState.value = PurchaseState.ProductLoaded(
                     productId = details.productId,
                     title = details.title,
@@ -98,10 +119,19 @@ actual class BillingManager : PurchasesUpdatedListener {
                     price = price
                 )
             } else {
-                _purchaseState.value = PurchaseState.Error(
-                    "Failed to load product: ${billingResult.debugMessage}",
-                    billingResult.responseCode
-                )
+                val errorMsg = when (billingResult.responseCode) {
+                    BillingClient.BillingResponseCode.OK -> "Product not found. Create it in Google Play Console."
+                    BillingClient.BillingResponseCode.SERVICE_DISCONNECTED -> "Billing service disconnected"
+                    BillingClient.BillingResponseCode.FEATURE_NOT_SUPPORTED -> "Feature not supported"
+                    BillingClient.BillingResponseCode.SERVICE_UNAVAILABLE -> "Billing service unavailable"
+                    BillingClient.BillingResponseCode.BILLING_UNAVAILABLE -> "Billing unavailable on this device"
+                    BillingClient.BillingResponseCode.ITEM_UNAVAILABLE -> "Product not available"
+                    BillingClient.BillingResponseCode.DEVELOPER_ERROR -> "Developer error - check product ID"
+                    BillingClient.BillingResponseCode.ERROR -> "General error"
+                    else -> "Unknown error (${billingResult.responseCode}): ${billingResult.debugMessage}"
+                }
+                Log.e("BillingManager", "Failed to load product: $errorMsg")
+                _purchaseState.value = PurchaseState.Error(errorMsg, billingResult.responseCode)
             }
         }
     }
