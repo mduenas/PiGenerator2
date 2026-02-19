@@ -24,9 +24,8 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
     val isAdRemovalPurchased by billingManager.isAdRemovalPurchased.collectAsState()
     val scope = rememberCoroutineScope()
 
-    // Initialize billing on screen load
+    // Load product details when visiting settings (billing is initialized at app startup)
     LaunchedEffect(Unit) {
-        billingManager.initialize()
         billingManager.loadProductDetails()
     }
 
