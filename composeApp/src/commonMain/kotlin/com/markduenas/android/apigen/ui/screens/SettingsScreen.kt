@@ -228,7 +228,7 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
                     )
 
                     Text(
-                        text = "Version 2.3",
+                        text = "Version 2.5",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
