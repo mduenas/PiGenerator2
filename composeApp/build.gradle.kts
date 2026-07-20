@@ -1,6 +1,7 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -9,6 +10,18 @@ plugins {
     alias(libs.plugins.composeCompiler)
     kotlin("native.cocoapods")
 }
+
+// Version from root version.properties (CI can override -PversionCode / -PversionName)
+val versionPropertiesFile = rootProject.file("version.properties")
+val versionProperties = Properties()
+if (versionPropertiesFile.exists()) {
+    versionProperties.load(versionPropertiesFile.inputStream())
+}
+val ciVersionCode = project.findProperty("versionCode")?.toString()?.toIntOrNull()
+val ciVersionName = project.findProperty("versionName")?.toString()
+val appVersionCode = ciVersionCode ?: versionProperties.getProperty("versionCode", "1").toInt()
+val appVersionName = ciVersionName ?: versionProperties.getProperty("versionName", "1.0")
+
 
 kotlin {
     androidTarget {
@@ -83,8 +96,8 @@ android {
         applicationId = "com.markduenas.android.apigen"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 29
-        versionName = "2.5"
+        versionCode = appVersionCode
+        versionName = appVersionName
     }
     packaging {
         resources {
