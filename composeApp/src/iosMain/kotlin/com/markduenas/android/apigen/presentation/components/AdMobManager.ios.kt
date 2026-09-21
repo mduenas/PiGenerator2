@@ -42,11 +42,21 @@ actual class AdMobManager {
         adUnitId: String,
         modifier: Modifier
     ) {
-        if (BuildConfig.isDebug) {
-            // Show placeholder in debug mode
+        // Always load via native AdMob when the Swift factory is available.
+        // In debug, adUnitId is already a Google sample test unit (see AdMobConstants).
+        // Fallback to placeholder only when the factory is missing.
+        if (adMobViewControllerFactory != null) {
+            UIKitViewController(
+                factory = {
+                    AdMobBannerViewController(adUnitId)
+                },
+                modifier = modifier
+                    .fillMaxWidth()
+                    .height(AdMobConstants.BANNER_HEIGHT_DP.dp)
+            )
+        } else if (BuildConfig.isDebug) {
             AdMobBannerPlaceholder(modifier)
         } else {
-            // Use native iOS AdMob implementation
             UIKitViewController(
                 factory = {
                     AdMobBannerViewController(adUnitId)

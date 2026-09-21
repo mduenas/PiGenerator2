@@ -41,7 +41,9 @@ actual class BillingManager : PurchasesUpdatedListener {
 
         billingClient = BillingClient.newBuilder(context)
             .setListener(this)
-            .enablePendingPurchases()
+            .enablePendingPurchases(
+                PendingPurchasesParams.newBuilder().enableOneTimeProducts().build()
+            )
             .build()
 
         startConnection()
@@ -101,7 +103,8 @@ actual class BillingManager : PurchasesUpdatedListener {
             .setProductList(productList)
             .build()
 
-        client.queryProductDetailsAsync(params) { billingResult, productDetailsList ->
+        client.queryProductDetailsAsync(params) { billingResult, queryProductDetailsResult ->
+            val productDetailsList = queryProductDetailsResult.productDetailsList
             Log.d("BillingManager", "Product query response: ${billingResult.responseCode}, products: ${productDetailsList.size}")
             Log.d("BillingManager", "Looking for product ID: ${BillingConstants.PRODUCT_ID_REMOVE_ADS_ANDROID}")
 

@@ -69,7 +69,7 @@ kotlin {
             implementation("com.google.android.gms:play-services-ads:23.6.0")
 
             // Google Play Billing for in-app purchases
-            implementation("com.android.billingclient:billing-ktx:7.0.0")
+            implementation("com.android.billingclient:billing-ktx:8.0.0")
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -98,6 +98,8 @@ android {
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = appVersionCode
         versionName = appVersionName
+        // Overridden per build type; default safe for non-store installs
+        buildConfigField("Boolean", "USE_TEST_ADS", "true")
     }
     packaging {
         resources {
@@ -105,8 +107,22 @@ android {
         }
     }
     buildTypes {
+        getByName("debug") {
+            buildConfigField("Boolean", "USE_TEST_ADS", "true")
+        }
         getByName("release") {
             isMinifyEnabled = false
+            // Play Production track only
+            buildConfigField("Boolean", "USE_TEST_ADS", "false")
+        }
+        // Play Internal / Closed testing: same as release but forces Google sample ad units.
+        // Upload: ./gradlew :composeApp:bundleInternal
+        create("internal") {
+            initWith(getByName("release"))
+            matchingFallbacks += listOf("release")
+            isDebuggable = false
+            versionNameSuffix = "-internal"
+            buildConfigField("Boolean", "USE_TEST_ADS", "true")
         }
     }
     buildFeatures {

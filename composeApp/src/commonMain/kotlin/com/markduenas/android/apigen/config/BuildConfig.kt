@@ -2,16 +2,28 @@ package com.markduenas.android.apigen.config
 
 /**
  * Cross-platform build configuration detection
- * Automatically detects debug/release builds for proper ad configuration
+ * for ad configuration and other build-gated behavior.
  */
 expect object BuildConfig {
     /**
-     * Returns true if this is a debug build, false for release builds
+     * True for local debug / debuggable builds only.
+     * False for release, TestFlight, and Play (any track).
      */
     val isDebug: Boolean
-    
+
     /**
-     * Returns the build type as a string ("debug", "release", etc.)
+     * Build type label ("debug", "release", "testflight", etc.)
      */
     val buildType: String
+
+    /**
+     * True when Google sample test ad units must be used:
+     * - local debug / debuggable
+     * - iOS TestFlight
+     * - Android `internal` build type (USE_TEST_ADS=true)
+     * - sideloaded non-Play release installs
+     *
+     * False only for production store distribution (Play Production / App Store).
+     */
+    val useTestAds: Boolean
 }

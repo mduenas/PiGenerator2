@@ -35,7 +35,14 @@ actual fun AdMobBanner(
         }
         
         // Configure test devices for debug builds
-        val testDeviceIds = listOf(AdRequest.DEVICE_ID_EMULATOR)
+        // Google logs your device's real hash to Logcat the first time an ad
+        // loads on it: "Use RequestConfiguration.Builder().setTestDeviceIds(...)"
+        // - copy that hash into the list below so dev/QA taps never count as
+        // real ad traffic.
+        val testDeviceIds = listOf(
+            AdRequest.DEVICE_ID_EMULATOR
+            // "ADD_YOUR_REAL_DEVICE_HASH_HERE",
+        )
         val configuration = RequestConfiguration.Builder()
             .setTestDeviceIds(testDeviceIds)
             .build()

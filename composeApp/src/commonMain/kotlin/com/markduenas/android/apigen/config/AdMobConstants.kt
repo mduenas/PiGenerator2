@@ -39,21 +39,29 @@ object AdMobConstants {
     const val ADMOB_ENABLED = true
 
     /**
-     * Automatically detects test mode based on build type
-     * Returns true for debug builds, false for release builds
+     * True for debug, TestFlight, Play-internal (USE_TEST_ADS), and sideloaded builds.
+     * False only for production Play / App Store distribution.
      */
     val TEST_MODE: Boolean
-        get() = BuildConfig.isDebug
+        get() = BuildConfig.useTestAds
     
+    // Google sample test ad unit IDs — always return test ads for every request
+    private const val ANDROID_TEST_BANNER_AD_UNIT_ID = "ca-app-pub-3940256099942544/6300978111"
+    private const val IOS_TEST_BANNER_AD_UNIT_ID = "ca-app-pub-3940256099942544/2934735716"
+
     /**
-     * Get the platform-specific banner ad unit ID
+     * Get the platform-specific banner ad unit ID.
+     * Test mode (debug / TestFlight / internal) → Google sample units.
+     * Production store → real units.
      */
     fun getBannerAdUnitId(): String {
         val platform = getPlatform()
-        return if (platform.name.startsWith("Android")) {
-            ANDROID_BANNER_AD_UNIT_ID
-        } else {
-            IOS_BANNER_AD_UNIT_ID
+        val isAndroid = platform.name.startsWith("Android")
+        return when {
+            TEST_MODE && isAndroid -> ANDROID_TEST_BANNER_AD_UNIT_ID
+            TEST_MODE && !isAndroid -> IOS_TEST_BANNER_AD_UNIT_ID
+            isAndroid -> ANDROID_BANNER_AD_UNIT_ID
+            else -> IOS_BANNER_AD_UNIT_ID
         }
     }
 
