@@ -111,7 +111,12 @@ android {
             buildConfigField("Boolean", "USE_TEST_ADS", "true")
         }
         getByName("release") {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
             // Play Production track only
             buildConfigField("Boolean", "USE_TEST_ADS", "false")
         }
