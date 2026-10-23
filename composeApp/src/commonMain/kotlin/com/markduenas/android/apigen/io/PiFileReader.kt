@@ -53,9 +53,20 @@ class LRUCache<K, V>(private val maxSize: Int) {
 }
 
 /**
+ * Source of pi digits that [com.markduenas.android.apigen.calculation.PiDigitCache] reads from.
+ */
+interface PiDigitSource {
+    suspend fun initialize()
+    suspend fun readDigits(offset: Int, length: Int): String
+    fun getTotalDigits(): Int
+    fun clearCache()
+    suspend fun preloadWindow(centerOffset: Int, windowSize: Int = 10000) {}
+}
+
+/**
  * Cached file reader that implements windowed reading with LRU cache
  */
-class CachedPiFileReader {
+class CachedPiFileReader : PiDigitSource {
     private val fileReader = PiFileReader()
     private val chunkCache = LRUCache<Int, String>(50) // Cache 50 chunks
     private var isInitialized = false
@@ -64,14 +75,14 @@ class CachedPiFileReader {
         private const val CHUNK_SIZE = 5000 // 5KB chunks for good balance of memory/performance
     }
     
-    suspend fun initialize() {
+    override suspend fun initialize() {
         if (!isInitialized) {
             fileReader.initialize()
             isInitialized = true
         }
     }
     
-    suspend fun readDigits(offset: Int, length: Int): String = withContext(Dispatchers.Default) {
+    override suspend fun readDigits(offset: Int, length: Int): String = withContext(Dispatchers.Default) {
         if (!isInitialized) initialize()
         
         val startChunk = offset / CHUNK_SIZE
@@ -124,9 +135,9 @@ class CachedPiFileReader {
         }
     }
     
-    fun getTotalDigits(): Int = fileReader.getTotalDigits()
+    override fun getTotalDigits(): Int = fileReader.getTotalDigits()
     
-    fun clearCache() = chunkCache.clear()
+    override fun clearCache() = chunkCache.clear()
     
     fun close() {
         fileReader.close()
@@ -136,7 +147,7 @@ class CachedPiFileReader {
     /**
      * Preload chunks around a center position for smooth scrolling
      */
-    suspend fun preloadWindow(centerOffset: Int, windowSize: Int = 10000) {
+    override suspend fun preloadWindow(centerOffset: Int, windowSize: Int) {
         val startOffset = (centerOffset - windowSize / 2).coerceAtLeast(0)
         val endOffset = (centerOffset + windowSize / 2).coerceAtMost(getTotalDigits())
         

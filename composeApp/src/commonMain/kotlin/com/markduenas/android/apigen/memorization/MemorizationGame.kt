@@ -7,7 +7,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-class MemorizationGame {
+class MemorizationGame(
+    private val digitProvider: suspend (startDigit: Int, length: Int) -> String = { start, length -> PiCalculator.getDigitsString(start, length) },
+    private val availableDigits: () -> Int = { PiCalculator.getAvailableDigitCount() }
+) {
     private val _gameState = MutableStateFlow(MemorizationGameState())
     val gameState: StateFlow<MemorizationGameState> = _gameState.asStateFlow()
     
@@ -21,8 +24,13 @@ class MemorizationGame {
     ))
     val stats: StateFlow<MemorizationStats> = _stats.asStateFlow()
     
-    suspend fun startSession(mode: MemorizationMode, startDigit: Int = 0) {
-        val rawDigits = PiCalculator.getDigitsString(startDigit, 100)
+    suspend fun startSession(
+        mode: MemorizationMode,
+        startDigit: Int = 0,
+        digitCount: Int = DEFAULT_DIGIT_COUNT
+    ) {
+        val count = digitCount.coerceIn(1, maxOf(1, availableDigits() - startDigit))
+        val rawDigits = digitProvider(startDigit, count)
         // Filter out non-digit characters (like decimal points)
         val targetDigits = rawDigits.filter { it.isDigit() }
         _gameState.value = MemorizationGameState(
@@ -148,6 +156,11 @@ class MemorizationGame {
         return achievements
     }
     
+    companion object {
+        const val DEFAULT_DIGIT_COUNT = 100
+        val DIGIT_COUNT_OPTIONS = listOf(50, 100, 250, 500, 1000)
+    }
+
     private fun generateSessionId(): String = getCurrentTimeMillis().toString()
     
     fun getHint(position: Int): String {

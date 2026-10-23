@@ -3,6 +3,7 @@ package com.markduenas.android.apigen.calculation
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import com.markduenas.android.apigen.io.CachedPiFileReader
+import com.markduenas.android.apigen.io.PiDigitSource
 import kotlin.math.max
 import kotlin.math.min
 
@@ -11,12 +12,11 @@ import kotlin.math.min
  * Maintains a sliding window of digits in memory for efficient scrolling.
  * Now uses the hybrid file reader for optimal performance across platforms.
  */
-class PiDigitCache {
+class PiDigitCache(private val fileReader: PiDigitSource = CachedPiFileReader()) {
     private val mutex = Mutex()
     private var cache: String = ""
     private var cacheStartIndex: Int = 0
     private val cacheSize = 10000 // Cache window size (about 10 screens worth)
-    private val fileReader = CachedPiFileReader()
     private var isInitialized = false
     
     // Initialize the file reader
@@ -42,7 +42,17 @@ class PiDigitCache {
      * Get digits from the specified range, loading from file if needed
      */
     suspend fun getDigits(startIndex: Int, length: Int): String {
+        if (startIndex < 0 || length <= 0) return ""
         mutex.withLock {
+            // Requests bigger than the window (e.g. whole-file pattern search) can't be served
+            // from it, so read them straight from the file reader.
+            if (length > cacheSize) {
+                ensureInitialized()
+                val available = getAvailableDigitCount()
+                if (startIndex >= available) return ""
+                return loadDigitsFromFile(startIndex, min(length, available - startIndex))
+            }
+
             val endIndex = startIndex + length
             
             // Check if we need to reload the cache

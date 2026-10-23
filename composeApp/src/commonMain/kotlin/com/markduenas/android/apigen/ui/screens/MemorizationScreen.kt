@@ -29,6 +29,7 @@ fun MemorizationScreen(modifier: Modifier = Modifier) {
     val gameState by game.gameState.collectAsState()
     val stats by game.stats.collectAsState()
     var selectedMode by remember { mutableStateOf(MemorizationMode.PRACTICE) }
+    var selectedDigitCount by remember { mutableStateOf(MemorizationGame.DEFAULT_DIGIT_COUNT) }
     val coroutineScope = rememberCoroutineScope()
     
     Column(
@@ -75,11 +76,29 @@ fun MemorizationScreen(modifier: Modifier = Modifier) {
                         }
                     }
                     
+                    Text(
+                        text = "Digits",
+                        style = MaterialTheme.typography.titleMedium
+                    )
+
+                    LazyRow(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        items(MemorizationGame.DIGIT_COUNT_OPTIONS) { count ->
+                            FilterChip(
+                                onClick = { selectedDigitCount = count },
+                                label = { Text(count.toString()) },
+                                selected = selectedDigitCount == count,
+                                enabled = !gameState.isActive
+                            )
+                        }
+                    }
+
                     // Start Session Button
                     Button(
                         onClick = { 
                             coroutineScope.launch {
-                                game.startSession(selectedMode)
+                                game.startSession(selectedMode, digitCount = selectedDigitCount)
                             }
                         },
                         modifier = Modifier.fillMaxWidth(),
