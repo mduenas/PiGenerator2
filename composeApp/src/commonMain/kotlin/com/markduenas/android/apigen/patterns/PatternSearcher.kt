@@ -5,10 +5,14 @@ import com.markduenas.android.apigen.data.PatternSearchResult
 import com.markduenas.android.apigen.data.PatternType
 import com.markduenas.android.apigen.utils.formatString
 
-class PatternSearcher {
+class PatternSearcher(
+    private val digitProvider: suspend () -> String = {
+        PiDigitManager.getDigits(0, PiDigitManager.getAvailableDigitCount())
+    }
+) {
     
     suspend fun searchPattern(pattern: String, patternType: PatternType): PatternSearchResult {
-        val piDigits = PiDigitManager.getDigits(0, 1000000) // Use full million digits for pattern search from file
+        val piDigits = digitProvider()
         val positions = findAllOccurrences(piDigits, pattern)
         
         return PatternSearchResult(
@@ -76,7 +80,7 @@ class PatternSearcher {
     }
     
     suspend fun getPatternStatistics(pattern: String): PatternStatistics {
-        val piDigits = PiDigitManager.getDigits(0, 1000000)
+        val piDigits = digitProvider()
         val positions = findAllOccurrences(piDigits, pattern)
         
         val distances = if (positions.size > 1) {
