@@ -1,11 +1,13 @@
 package com.markduenas.android.apigen
 
 import com.markduenas.android.apigen.data.MemorizationMode
+import com.markduenas.android.apigen.io.PiDataUnavailableException
 import com.markduenas.android.apigen.memorization.MemorizationGame
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 class MemorizationGameTest {
@@ -66,5 +68,17 @@ class MemorizationGameTest {
         g.startSession(MemorizationMode.TEST, digitCount = 500)
         assertFalse(g.submitAnswer("9"))
         assertTrue(g.gameState.value.isComplete)
+    }
+
+    @Test
+    fun missingPiDataReportsErrorInsteadOfCrashing() = runTest {
+        val g = MemorizationGame(
+            digitProvider = { _, _ -> throw PiDataUnavailableException("gone") },
+            availableDigits = { 1_000_000 }
+        )
+        g.startSession(MemorizationMode.PRACTICE)
+        assertNotNull(g.gameState.value.errorMessage)
+        assertFalse(g.gameState.value.isActive)
+        assertEquals("", g.gameState.value.targetDigits)
     }
 }

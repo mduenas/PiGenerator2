@@ -2,6 +2,7 @@ package com.markduenas.android.apigen.memorization
 
 import com.markduenas.android.apigen.calculation.PiCalculator
 import com.markduenas.android.apigen.data.*
+import com.markduenas.android.apigen.io.PiDataUnavailableException
 import com.markduenas.android.apigen.utils.getCurrentTimeMillis
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -30,7 +31,14 @@ class MemorizationGame(
         digitCount: Int = DEFAULT_DIGIT_COUNT
     ) {
         val count = digitCount.coerceIn(1, maxOf(1, availableDigits() - startDigit))
-        val rawDigits = digitProvider(startDigit, count)
+        val rawDigits = try {
+            digitProvider(startDigit, count)
+        } catch (e: PiDataUnavailableException) {
+            _gameState.value = MemorizationGameState(
+                errorMessage = "Pi digits couldn't be loaded. Please restart the app or reinstall it."
+            )
+            return
+        }
         // Filter out non-digit characters (like decimal points)
         val targetDigits = rawDigits.filter { it.isDigit() }
         _gameState.value = MemorizationGameState(
@@ -200,5 +208,6 @@ data class MemorizationGameState(
     val startTime: Long = 0L,
     val endTime: Long = 0L,
     val lastAnswer: String = "",
-    val lastAnswerCorrect: Boolean? = null
+    val lastAnswerCorrect: Boolean? = null,
+    val errorMessage: String? = null
 )

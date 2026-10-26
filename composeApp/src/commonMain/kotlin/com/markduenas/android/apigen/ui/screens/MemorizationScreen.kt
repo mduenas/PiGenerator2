@@ -94,6 +94,14 @@ fun MemorizationScreen(modifier: Modifier = Modifier) {
                         }
                     }
 
+                    gameState.errorMessage?.let {
+                        Text(
+                            text = it,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
+
                     // Start Session Button
                     Button(
                         onClick = { 

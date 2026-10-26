@@ -1,6 +1,6 @@
 ---
 stage: live
-reviewed_at: 2026-07-28
+reviewed_at: 2026-10-26
 milestone:
   title: Android targetSdk 36 release
   target: 2026-07-31
@@ -9,15 +9,15 @@ milestone:
 
 ## Next steps
 
-- [ ] Promote internal 2.6 to production — prod is still 2.4 (code 28)
-- [ ] Release with Android targetSdk 36
+- [x] Billing Library 8.0.0 is on production 2.7 (code 33)
+- [ ] Future release: add Firebase Crashlytics (Android + iOS; upload R8 mapping file with each release build)
+- [ ] Confirm the 2.7 production binary targets API 36. The repo does. The live binary was not inspected.
 
 ## Notes
 
 Seeded by adopt-state on 2026-07-28 — stage inferred from deployed.
 
-**Play Store** — checked 2026-08-19
+**Play Store** — checked 2026-10-26
 
 - Listing: **Pi Generator** `com.markduenas.android.apigen`
-- Production: 2.4 (code 28)
-- Internal testing: 2.6
+- Production: 2.7 (code 33). Billing Library 8.0.0 is in that release.

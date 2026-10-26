@@ -17,6 +17,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.markduenas.android.apigen.data.PatternSearchResult
 import com.markduenas.android.apigen.data.PatternType
+import com.markduenas.android.apigen.io.PiDataUnavailableException
 import com.markduenas.android.apigen.patterns.PatternSearcher
 import com.markduenas.android.apigen.utils.formatString
 import com.markduenas.android.apigen.patterns.PatternStatistics
@@ -31,6 +32,7 @@ fun PatternExplorerScreen(modifier: Modifier = Modifier) {
     var patternStats by remember { mutableStateOf<PatternStatistics?>(null) }
     var selectedPatternType by remember { mutableStateOf(PatternType.CUSTOM) }
     var isSearching by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
     val coroutineScope = rememberCoroutineScope()
     
     // Birthday search fields
@@ -38,9 +40,24 @@ fun PatternExplorerScreen(modifier: Modifier = Modifier) {
     var birthDay by remember { mutableStateOf("") }
     var birthYear by remember { mutableStateOf("") }
     
+    // Runs a search, showing an error instead of crashing when the pi digits can't be loaded
+    suspend fun guardedSearch(block: suspend () -> Unit) {
+        isSearching = true
+        errorMessage = null
+        try {
+            block()
+        } catch (e: PiDataUnavailableException) {
+            errorMessage = "Pi digits couldn't be loaded. Please restart the app or reinstall it."
+            searchResults = emptyList()
+            patternStats = null
+        } finally {
+            isSearching = false
+        }
+    }
+
     LaunchedEffect(Unit) {
         // Load famous sequences on screen load
-        searchResults = patternSearcher.getFamousSequences()
+        guardedSearch { searchResults = patternSearcher.getFamousSequences() }
     }
     
     Column(
@@ -126,15 +143,15 @@ fun PatternExplorerScreen(modifier: Modifier = Modifier) {
                                         onClick = {
                                             if (searchQuery.isNotEmpty()) {
                                                 coroutineScope.launch {
-                                                    isSearching = true
-                                                    val result = if (selectedPatternType == PatternType.PHONE_NUMBER) {
-                                                        patternSearcher.searchPhoneNumber(searchQuery)
-                                                    } else {
-                                                        patternSearcher.searchPattern(searchQuery, PatternType.CUSTOM)
+                                                    guardedSearch {
+                                                        val result = if (selectedPatternType == PatternType.PHONE_NUMBER) {
+                                                            patternSearcher.searchPhoneNumber(searchQuery)
+                                                        } else {
+                                                            patternSearcher.searchPattern(searchQuery, PatternType.CUSTOM)
+                                                        }
+                                                        searchResults = listOf(result)
+                                                        patternStats = patternSearcher.getPatternStatistics(searchQuery)
                                                     }
-                                                    searchResults = listOf(result)
-                                                    patternStats = patternSearcher.getPatternStatistics(searchQuery)
-                                                    isSearching = false
                                                 }
                                             }
                                         }
@@ -187,11 +204,11 @@ fun PatternExplorerScreen(modifier: Modifier = Modifier) {
                                         
                                         if (month != null && day != null && year != null) {
                                             coroutineScope.launch {
-                                                isSearching = true
-                                                val result = patternSearcher.searchBirthday(month, day, year)
-                                                searchResults = listOf(result)
-                                                patternStats = patternSearcher.getPatternStatistics(result.pattern)
-                                                isSearching = false
+                                                guardedSearch {
+                                                    val result = patternSearcher.searchBirthday(month, day, year)
+                                                    searchResults = listOf(result)
+                                                    patternStats = patternSearcher.getPatternStatistics(result.pattern)
+                                                }
                                             }
                                         }
                                     },
@@ -225,8 +242,10 @@ fun PatternExplorerScreen(modifier: Modifier = Modifier) {
                         OutlinedButton(
                             onClick = {
                                 coroutineScope.launch {
-                                    searchResults = patternSearcher.getFamousSequences()
-                                    patternStats = null
+                                    guardedSearch {
+                                        searchResults = patternSearcher.getFamousSequences()
+                                        patternStats = null
+                                    }
                                 }
                             },
                             modifier = Modifier.weight(1f)
@@ -237,9 +256,11 @@ fun PatternExplorerScreen(modifier: Modifier = Modifier) {
                         OutlinedButton(
                             onClick = {
                                 coroutineScope.launch {
-                                    val result = patternSearcher.searchPattern("123456", PatternType.CUSTOM)
-                                    searchResults = listOf(result)
-                                    patternStats = patternSearcher.getPatternStatistics("123456")
+                                    guardedSearch {
+                                        val result = patternSearcher.searchPattern("123456", PatternType.CUSTOM)
+                                        searchResults = listOf(result)
+                                        patternStats = patternSearcher.getPatternStatistics("123456")
+                                    }
                                 }
                             },
                             modifier = Modifier.weight(1f)
@@ -251,6 +272,16 @@ fun PatternExplorerScreen(modifier: Modifier = Modifier) {
             }
         }
         
+        errorMessage?.let {
+            item {
+                Text(
+                    text = it,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
+        }
+
         // Pattern Statistics
         patternStats?.let { stats ->
             item {

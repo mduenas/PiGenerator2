@@ -1,10 +1,12 @@
 package com.markduenas.android.apigen
 
 import com.markduenas.android.apigen.calculation.PiDigitCache
+import com.markduenas.android.apigen.io.PiDataUnavailableException
 import com.markduenas.android.apigen.io.PiDigitSource
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 
 /** Deterministic fake: digit at index i is i % 10. */
 class FakeDigitSource(private val total: Int = 1_000_000) : PiDigitSource {
@@ -52,5 +54,35 @@ class PiDigitCacheTest {
         val cache = PiDigitCache(FakeDigitSource())
         assertEquals("", cache.getDigits(-1, 10))
         assertEquals("", cache.getDigits(0, 0))
+    }
+
+    @Test
+    fun initFailureSurfacesInsteadOfGeneratingDigits() = runTest {
+        val source = object : PiDigitSource by FakeDigitSource() {
+            override suspend fun initialize() = throw RuntimeException("no file")
+        }
+        assertFailsWith<PiDataUnavailableException> { PiDigitCache(source).getDigits(0, 100) }
+    }
+
+    @Test
+    fun readFailureSurfacesInsteadOfGeneratingDigits() = runTest {
+        val source = object : PiDigitSource by FakeDigitSource() {
+            override suspend fun readDigits(offset: Int, length: Int): String = throw RuntimeException("io")
+        }
+        assertFailsWith<PiDataUnavailableException> { PiDigitCache(source).getDigits(0, 100) }
+        assertFailsWith<PiDataUnavailableException> { PiDigitCache(source).getDigits(0, 50_000) }
+    }
+
+    @Test
+    fun initIsRetriedAfterFailure() = runTest {
+        var failures = 1
+        val source = object : PiDigitSource by FakeDigitSource() {
+            override suspend fun initialize() {
+                if (failures-- > 0) throw RuntimeException("transient")
+            }
+        }
+        val cache = PiDigitCache(source)
+        assertFailsWith<PiDataUnavailableException> { cache.getDigits(0, 10) }
+        assertEquals("0123456789", cache.getDigits(0, 10))
     }
 }
