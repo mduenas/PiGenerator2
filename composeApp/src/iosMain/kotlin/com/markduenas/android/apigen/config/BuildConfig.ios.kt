@@ -21,6 +21,18 @@ actual object BuildConfig {
 
     actual val useTestAds: Boolean
         get() = isDebug || isTestFlightBuild()
+
+    actual val versionLabel: String
+        get() {
+            val info = NSBundle.mainBundle.infoDictionary
+            val short = info?.get("CFBundleShortVersionString") as? String
+            val build = info?.get("CFBundleVersion") as? String
+            return when {
+                short.isNullOrBlank() -> build ?: "?"
+                build.isNullOrBlank() || build == short -> short
+                else -> "$short ($build)"
+            }
+        }
 }
 
 private fun isLocalDebugBuild(): Boolean {

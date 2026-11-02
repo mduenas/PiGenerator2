@@ -43,6 +43,9 @@ actual object BuildConfig {
                 true
             }
         }
+
+    actual val versionLabel: String
+        get() = "${GeneratedBuildConfig.VERSION_NAME} (${GeneratedBuildConfig.VERSION_CODE})"
 }
 
 private fun isInstalledFromPlayStore(context: Context): Boolean {

@@ -26,4 +26,11 @@ expect object BuildConfig {
      * False only for production store distribution (Play Production / App Store).
      */
     val useTestAds: Boolean
+
+    /**
+     * Version shown to users, per platform, e.g. "2.9.1 (36)".
+     * Android: versionName (versionCode) from the generated BuildConfig.
+     * iOS: CFBundleShortVersionString (CFBundleVersion) from the main bundle.
+     */
+    val versionLabel: String
 }
