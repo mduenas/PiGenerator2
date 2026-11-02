@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.os.Build
+import com.markduenas.android.apigen.BuildConfig as GeneratedBuildConfig
 
 /**
  * Android BuildConfig: debug via FLAG_DEBUGGABLE; test ads also for
@@ -33,23 +34,15 @@ actual object BuildConfig {
             if (isDebug) return true
             return try {
                 val context = getAndroidContext()
-                if (readUseTestAdsField(context)) return true
+                // Read the generated flag directly (no reflection): R8 strips/renames the
+                // generated BuildConfig class, so Class.forName(...) silently returned false. DUE-64.
+                if (GeneratedBuildConfig.USE_TEST_ADS) return true
                 // Sideloaded / IDE release APKs — never treat as production ad traffic
                 !isInstalledFromPlayStore(context)
             } catch (_: Exception) {
                 true
             }
         }
-}
-
-private fun readUseTestAdsField(context: Context): Boolean {
-    return try {
-        Class.forName("${context.packageName}.BuildConfig")
-            .getField("USE_TEST_ADS")
-            .getBoolean(null)
-    } catch (_: Exception) {
-        false
-    }
 }
 
 private fun isInstalledFromPlayStore(context: Context): Boolean {
