@@ -40,3 +40,6 @@ PiGenerator2/
 composeApp/release/
 
 iosApp/Pods/
+
+# Local release artifacts (exact AABs that were tested; not committed)
+release-artifacts/

@@ -142,4 +142,13 @@ android {
 
 dependencies {
     debugImplementation(compose.uiTooling)
+
+    constraints {
+        // play-services-basement (via play-services-ads 23.6.0 and billing 8.0.0) still declares
+        // androidx.fragment:fragment:1.1.0, which Play's SDK Index flags as outdated (needs 1.2.1+).
+        // Raise it for all Android classpaths without adding a direct dependency. DUE-64.
+        implementation(libs.androidx.fragment) {
+            because("Play SDK Index: androidx.fragment 1.1.0 is outdated; require >= 1.2.1 (DUE-64)")
+        }
+    }
 }

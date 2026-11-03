@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import com.markduenas.android.apigen.billing.BillingConstants
 import com.markduenas.android.apigen.billing.PurchaseState
 import com.markduenas.android.apigen.billing.getBillingManager
+import com.markduenas.android.apigen.config.BuildConfig
 import kotlinx.coroutines.launch
 
 @Composable
@@ -228,7 +229,7 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
                     )
 
                     Text(
-                        text = "Version 2.5",
+                        text = "Version ${BuildConfig.versionLabel}",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
